@@ -47,3 +47,6 @@ class PythonInvoked(BaseConsoleInvokedComponent):
         transformed_scores = self._transformation_function(scores, transform_params)
 
         return np.array(transformed_scores), np.array(scores)
+
+    def _create_command(self, step, input_json_path, output_json_path):
+        return []
