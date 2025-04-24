@@ -23,21 +23,21 @@ class Inception:
             self.evaluate_and_add(standardized, scoring_function, prior)
 
     def _purge_memory(self):
-        #unique_df = self.memory.drop_duplicates(subset=["smiles"])
-        #sorted_df = unique_df.sort_values('score', ascending=False)
-        #self.memory = sorted_df.head(self.configuration.memory_size)
-        sorted_df = self.memory.sort_values('score', ascending=False).dropna()
+        unique_df = self.memory.drop_duplicates(subset=["smiles"])
+        sorted_df = unique_df.sort_values('score', ascending=False)
+        self.memory = sorted_df.head(self.configuration.memory_size)
+        # sorted_df = self.memory.sort_values('score', ascending=False).dropna()
         #sorted_unique_df = sorted_df.drop_duplicates(subset=["scaffolds"], keep='first')
-        grouped_df = sorted_df.groupby('scaffolds').head(10)
-        self.memory = grouped_df.head(self.configuration.memory_size)
+        # grouped_df = sorted_df.groupby('scaffolds').head(10)
+        # self.memory = grouped_df.head(self.configuration.memory_size)
 
     def evaluate_and_add(self, smiles, scoring_function, prior):
         if len(smiles) > 0:
-            scaffolds = [MurckoScaffold.MurckoScaffoldSmiles(smi) for smi in smiles]
+            # scaffolds = [MurckoScaffold.MurckoScaffoldSmiles(smi) for smi in smiles]
             score = scoring_function.get_final_score(smiles)
             likelihood = prior.likelihood_smiles(smiles)
-            df = pd.DataFrame({"smiles": smiles, "scaffolds": scaffolds, "score": score.total_score, "likelihood": -likelihood.detach().cpu().numpy()})
-            #df = pd.DataFrame({"smiles": smiles, "score": score.total_score, "likelihood": -likelihood.detach().cpu().numpy()})
+            # df = pd.DataFrame({"smiles": smiles, "scaffolds": scaffolds, "score": score.total_score, "likelihood": -likelihood.detach().cpu().numpy()})
+            df = pd.DataFrame({"smiles": smiles, "score": score.total_score, "likelihood": -likelihood.detach().cpu().numpy()})
             self.memory = pd.concat([self.memory, df], ignore_index=True)
             self._purge_memory()
 
@@ -49,8 +49,9 @@ class Inception:
                 try:
                     scaffolds.append(MurckoScaffold.MurckoScaffoldSmiles(smi))
                 except:
-                    scaffolds.append(None)
-            df = pd.DataFrame({"smiles": smiles, "scaffolds": scaffolds, "score": score, "likelihood": neg_likelihood.detach().cpu().numpy()})
+                    scaffolds.append("")
+            # df = pd.DataFrame({"smiles": smiles, "scaffolds": scaffolds, "score": score, "likelihood": neg_likelihood.detach().cpu().numpy()})
+            df = pd.DataFrame({"smiles": smiles, "score": score, "likelihood": neg_likelihood.detach().cpu().numpy()})
             self.memory = pd.concat([self.memory, df], ignore_index=True)
             self._purge_memory()
 
