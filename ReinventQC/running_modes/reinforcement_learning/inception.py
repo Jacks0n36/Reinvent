@@ -25,7 +25,9 @@ class Inception:
     def _purge_memory(self):
         unique_df = self.memory.drop_duplicates(subset=["smiles"])
         sorted_df = unique_df.sort_values('score', ascending=False)
+        print(f'[DEBUG] memory_size : {self.configuration.memory_size}')
         self.memory = sorted_df.head(self.configuration.memory_size)
+        print(f'[DEBUG] self.memory :\n{self.memory.to_string(index=False)}')
         # sorted_df = self.memory.sort_values('score', ascending=False).dropna()
         #sorted_unique_df = sorted_df.drop_duplicates(subset=["scaffolds"], keep='first')
         # grouped_df = sorted_df.groupby('scaffolds').head(10)
