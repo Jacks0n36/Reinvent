@@ -24,6 +24,7 @@ def _update_raw_score(summary: ComponentSummary, query_length: int, valid_indice
 
 def _update_total_score(summary: ComponentSummary, query_length: int, valid_indices: List[int]) -> ComponentSummary:
     total_score = np.full(query_length, 0, dtype=np.float32)
+    print(f"len(valid_indices) = {len(valid_indices)}; len(summary.total_score) = {len(summary.total_score)}")
     assert len(valid_indices) == len(summary.total_score)
     for idx, value in zip(valid_indices, summary.total_score):
         total_score[idx] = value
@@ -67,12 +68,14 @@ class BaseScoringFunction(ABC):
     def get_final_score_for_step(self, smiles: List[str], step: int) -> FinalSummary:
         molecules, valid_indices = self._chemistry.smiles_to_mols_and_indices(smiles)
         query_size = len(smiles)
+        print(f"[ DEBUG ] gfsfs: len(smiles) = {len(smiles)}; len(valid_indices) = {len(valid_indices)}")
         #summaries = [_update_total_score(sc.calculate_score_for_step(molecules, step), query_size, valid_indices) for sc
         #             in self.scoring_components]
         summaries = list()
         for sc in self.scoring_components:
             if sc.__class__.__name__ not in ["RunJobs", "ExJobs","Triplets"]:
                 summaries.append(_update_total_score(sc.calculate_score_for_step(molecules, step), query_size, valid_indices))
+                print(f" [ DEBUG ] sc {sc.__class__.__name__}: query_size = {query_size}; len(valid_indices) = {len(valid_indices)}; len(summary.total_score) = {len(summary.total_score)}")
 
         for sc in self.scoring_components:
             if sc.__class__.__name__ in ["RunJobs", "ExJobs"]:
@@ -95,6 +98,7 @@ class BaseScoringFunction(ABC):
 
     def get_final_score(self, smiles: List[str]) -> FinalSummary:
         molecules, valid_indices = self._chemistry.smiles_to_mols_and_indices(smiles)
+        print(f"[ DEBUG ] gfs: len(smiles) = {len(smiles)}; len(valid_indices) = {len(valid_indices)}")
         query_size = len(smiles)
         summaries = [_update_total_score(sc.calculate_score(molecules), query_size, valid_indices) for sc
                      in self.scoring_components]
