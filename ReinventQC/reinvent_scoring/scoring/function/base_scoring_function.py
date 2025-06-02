@@ -75,8 +75,10 @@ class BaseScoringFunction(ABC):
         for sc in self.scoring_components:
             if sc.__class__.__name__ not in ["RunJobs", "ExJobs","Triplets"]:
                 summaries.append(_update_total_score(sc.calculate_score_for_step(molecules, step), query_size, valid_indices))
-                print(f" [ DEBUG ] sc {sc.__class__.__name__}: query_size = {query_size}; len(valid_indices) = {len(valid_indices)}; len(summary.total_score) = {len(summary.total_score)}")
-
+                try:
+                    print(f" [ DEBUG ] sc {sc.__class__.__name__}: query_size = {query_size}; len(valid_indices) = {len(valid_indices)}; len(summary.total_score) = {len(summary.total_score)}")
+                except Exception as e:
+                    print(f"[ DEBUG ] cannot get_final_score_for_step. Exception:\n{e}")
         for sc in self.scoring_components:
             if sc.__class__.__name__ in ["RunJobs", "ExJobs"]:
                 #print("RunJobs")
