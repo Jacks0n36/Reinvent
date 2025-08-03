@@ -44,5 +44,6 @@ class ComponentSpecificParametersEnum:
 
     VALUE_MAPPING = "value_mapping"
 
-    PYTHON_FUNCTION = "custom_function"
-    PYTHON_MODULE = "custom_module"
+    CUSTOM_MODULE = "custom_module"
+    CUSTOM_FUNCTION = "custom_function"
+    CUSTOM_FUNCTION_CONFIG = "custom_function_config"

@@ -26,19 +26,20 @@ class PythonInvoked(BaseConsoleInvokedComponent):
     def __init__(self, parameters: ComponentParameters, module_function="main"):
         super().__init__(parameters)
         python_function = self.parameters.specific_parameters.get(
-            self.component_specific_parameters.PYTHON_FUNCTION,
-            "main"
+            self.component_specific_parameters.CUSTOM_FUNCTION, "main"
         )
         if isinstance(python_function, str):
-            module_pkg = self.parameters.specific_parameters[self.component_specific_parameters.PYTHON_MODULE]
+            module_pkg = self.parameters.specific_parameters[self.component_specific_parameters.CUSTOM_MODULE]
             if isinstance(module_pkg, str):
                 module_pkg = importlib.import_module(module_pkg)
-            python_function = getattr(module_pkg, python_function)
+            python_function = getattr(module_pkg, python_function, parameters)
         self.caller = python_function
 
     def _calculate_score(self, smiles: List[str], step) -> np.array:
-
-        smiles_ids, scores = self.caller(smiles=smiles)
+        config = self.parameters.specific_parameters.get(
+            self.component_specific_parameters.CUSTOM_FUNCTION_CONFIG, {}
+        )
+        smiles_ids, scores = self.caller(smiles, config=config)
 
         # apply transformation
         transform_params = self.parameters.specific_parameters.get(
